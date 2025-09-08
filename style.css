@@ -137,7 +137,7 @@ input {
     border-radius: 8px;
     box-sizing: border-box;
     padding: 16px;
-    display: none;
+    display: flex;
     justify-content: center;
     align-items: center;
     gap: 8px;
