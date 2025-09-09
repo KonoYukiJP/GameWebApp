@@ -1,6 +1,6 @@
 // self-video.js
 
-import { analyzeAudio } from "analyzer.js";
+import { analyzeAudio } from "./analyzer.js";
 
 export const video = document.getElementById('self-video');
 const audioVisualizer = document.getElementById("self-audio-visualizer");
