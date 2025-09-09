@@ -1,6 +1,6 @@
 // movenet.js
 
-import { createCircleGraphic } from 'pixi.js'
+import { createCircleGraphic } from './pixi.js'
 
 let detector;
 let leftWristCircle, leftElbowCircle, leftHandCircle;
