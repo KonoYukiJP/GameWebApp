@@ -1,6 +1,6 @@
 // websocket.js
 
-import { createRtcPeerConnection, createChatDataChannel } from './webrtc.js';
+import { createRtcPeerConnection, createChatDataChannel } from 'webrtc.js';
 
 const selfVideo = document.getElementById('self-video');
 const codeTextField = document.getElementById("code")

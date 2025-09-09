@@ -1,6 +1,6 @@
 // peer-video.js
 
-import { analyzeAudio } from "/body/main/videos/analyzer.js";
+import { analyzeAudio } from "analyzer.js";
 
 const videoWrapper = document.getElementById("peer-video-wrapper")
 const video = document.getElementById("peer-video");

@@ -1,7 +1,7 @@
 // webrtc.js
 
-import * as peerVideo from '/body/main/videos/peer-video.js'
-import * as chatButton from '/body/main/toolbar/chat-button.js'
+import * as peerVideo from '../body/main/videos/peer-video.js'
+import * as chatButton from '../body/main/toolbar/chat-button.js'
 
 let rtcPeerConnection = null;
 let chatDataChannel = null;

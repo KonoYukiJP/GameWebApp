@@ -1,4 +1,5 @@
 // analyzer.js
+
 export function analyzeAudio(stream, audioVisualizer) {
     const audioContext = new AudioContext();
     const source = audioContext.createMediaStreamSource(stream);

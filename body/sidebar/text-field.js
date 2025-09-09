@@ -1,6 +1,6 @@
 // text-field.js
 
-import { sendOnChatDataChannel } from '/communication/webrtc.js';
+import { sendOnChatDataChannel } from '../../communication/webrtc.js';
 
 const textField = document.getElementById("text-field")
 
