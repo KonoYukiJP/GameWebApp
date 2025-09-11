@@ -1,7 +1,8 @@
 // sidebar.js
 
-const textField = document.getElementById("text-field");
+const sidebar = document.getElementById('sidebar');
 const log = document.getElementById("log");
+const textField = document.getElementById("text-field");
 
 export function initialize() {
     textField.addEventListener("keydown", (e) => {
