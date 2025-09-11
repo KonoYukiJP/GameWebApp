@@ -1,23 +1,66 @@
 // webrtc.js
 
-import * as peerVideo from '../body/main/videos/peer-video.js'
-import * as chatButton from '../body/main/toolbar/chat-button.js'
+const selfVideo = document.getElementById('self-video');
 
-let rtcPeerConnection = null;
-let chatDataChannel = null;
+let rtcPeerConnection;
+let chatDataChannel;
 
-window.addEventListener("call-button", (event) => {
-    if (!event.detail.isTurningOn) {
+window.addEventListener("callbuttonclick", (event) => {
+    if (event.detail.isTurningOn) {
+        connect();
+    } else {
+        sendMessage(JSON.stringify({ type: "disconnect" }));
         disconnect();
     }
 });
 
+window.addEventListener("websocketmessage", async (event) => {
+    const data = event.detail
+    if (data.type === "wait") {
+        if (window.statusText) window.statusText.textContent = window.localized.waiting;
+    }
+    if (data.type === "offerer") {
+        chatDataChannel = createChatDataChannel(rtcPeerConnection.createDataChannel("chat"));
+        const offer = await rtcPeerConnection.createOffer();
+        await rtcPeerConnection.setLocalDescription(offer);
+        window.dispatchEvent(new CustomEvent("signal", { detail: JSON.stringify(rtcPeerConnection.localDescription) }));
+    } 
+    if (data.type === "answerer") {
+        rtcPeerConnection.ondatachannel = (event) => {
+            chatDataChannel = createChatDataChannel(event.channel);
+        };
+    }
+    if (data.type === "offer") {
+        await rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(data));
+        const answer = await rtcPeerConnection.createAnswer();
+        await rtcPeerConnection.setLocalDescription(answer);
+        window.dispatchEvent(new CustomEvent("signal", { detail: JSON.stringify(rtcPeerConnection.localDescription) }));
+    }
+    if (data.type === "answer") {
+        await rtcPeerConnection.setRemoteDescription(new RTCSessionDescription(data));
+    }
+    if (data.type === "candidate") {
+        await rtcPeerConnection.addIceCandidate(data.candidate);
+    }
+});
+
+window.addEventListener("selfmessage", (event) => {
+    sendMessage(JSON.stringify({ type: "message", text: event.detail }));
+});
+
 // Create RTC Peer Connection
-export function createRtcPeerConnection(selfVideo, sendViaWebSocket) {
+function connect() {
     // RTC Peer Connection
     rtcPeerConnection = new RTCPeerConnection({
         iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
     });
+
+    // On Connection State Shange
+    rtcPeerConnection.onconnectionstatechange = () => {
+        if (rtcPeerConnection.connectionState === "failed") {
+            window.dispatchEvent(new CustomEvent("peerstatechange", { detail: { state: "disconnected" } }));
+        }
+    };
 
     // Add Video Track 
     selfVideo.srcObject.getTracks().forEach((track) => {
@@ -27,32 +70,20 @@ export function createRtcPeerConnection(selfVideo, sendViaWebSocket) {
     // On ICE Candidate
     rtcPeerConnection.onicecandidate = (event) => {
         if (event.candidate) {
-            sendViaWebSocket(JSON.stringify({ type: "candidate", candidate: event.candidate }));
+            window.dispatchEvent(new CustomEvent("signal", { detail: JSON.stringify({ type: "candidate", candidate: event.candidate }) }));
         }
     };
 
     // On Track
     rtcPeerConnection.ontrack = (event) => {
-        peerVideo.setSourceObject(event.streams[0]);
+        window.dispatchEvent(new CustomEvent("peertrack", { detail: event.streams[0] }));
     };
-
-    // On Data Channel
-    rtcPeerConnection.ondatachannel = (event) => {
-        chatDataChannel = event.channel;
-        setupChatDataChannel(chatDataChannel);
-    };
-
-    return rtcPeerConnection;
 }
 
-export { rtcPeerConnection, chatDataChannel };
-
 // Chat Data Channel
-export function createChatDataChannel(dataChannel, disconnect) {
-    chatDataChannel = dataChannel
-
+function createChatDataChannel(dataChannel) {
     // Peer Message
-    chatDataChannel.onmessage = (event) => {
+    dataChannel.onmessage = (event) => {
         const data = JSON.parse(event.data);
         if (data.type === "message") {
             const messageElement = document.createElement("div");
@@ -62,28 +93,27 @@ export function createChatDataChannel(dataChannel, disconnect) {
             messageElement.scrollIntoView({ behavior: "smooth", block: "end" });
             window.dispatchEvent(new Event("peer-message"));
         } else if (data.type === "disconnect") {
+            window.dispatchEvent(new CustomEvent("peerstatechange", { detail: { state: "disconnected" } }));
             disconnect()
         }
     };
-    chatDataChannel.onopen = () => {
-        console.log("chatDataChannel.onopen");
-        chatButton.show()
+    dataChannel.onopen = () => {
+        window.dispatchEvent(new CustomEvent("chatdatachannelopen"));
     };
-    chatDataChannel.onclose = () => {
-        console.log("chatDataChannel.onclose");
-        chatButton.hide()
-    };
+    return dataChannel;
 }
 
 function disconnect() {
-    if (chatDataChannel && chatDataChannel.readyState === "open") {
-        chatDataChannel.send(JSON.stringify({ type: "disconnect" }));
+    if (chatDataChannel) {
+        chatDataChannel.close();
+        chatDataChannel = null;
     }
     rtcPeerConnection.close();
     rtcPeerConnection = null;
 }
 
-export function sendOnChatDataChannel(message) {
-    if (chatDataChannel.readyState !== "open") return;
-    chatDataChannel.send(JSON.stringify({ type: "message", text: message }));
+function sendMessage(message) {
+    if (chatDataChannel && chatDataChannel.readyState === "open") {
+        chatDataChannel.send(message);
+    }
 }

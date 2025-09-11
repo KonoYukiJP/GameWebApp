@@ -14,13 +14,11 @@ let isOn = false;
 
 export function initialize() {
     callButton.addEventListener("click", () => {
-        window.dispatchEvent(new CustomEvent("call-button", { detail: { isTurningOn: !isOn}}));
+        window.dispatchEvent(new CustomEvent("callbuttonclick", { detail: { isTurningOn: !isOn}}));
+        !isOn ? turnOn() : turnOff();
     });
-
-    window.addEventListener("peer", (event) => {
-        if (event.detail.isConnected) {
-            turnOn();
-        } else {
+    window.addEventListener("peerstatechange", (event) => {
+        if (event.detail.state === "disconnected") {
             turnOff();
         }
     });

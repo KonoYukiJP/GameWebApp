@@ -8,21 +8,29 @@ const audioVisualizer = document.getElementById("peer-audio-visualizer");
 const connectionStatus = document.getElementById("connection-status");
 
 export function initialize() {
-    window.addEventListener("peer", (event) => {
-        if (event.detail.isConnected) {
-            show();
+    window.addEventListener("callbuttonclick", (event) => {
+        if (event.detail.isTurningOn) {
+            show()
         } else {
+            hide()
+        }
+    });
+    window.addEventListener("peerstatechange", (event) => {
+        if (event.detail.state === "disconnected") {
             hide();
         }
     });
+    window.addEventListener("peertrack", (event) => {
+        setSourceObject(event.detail)
+    });
 }
 
-export function show() {
+function show() {
     videoWrapper.style.display = "block";
     connectionStatus.style.display = "flex";
 }
 
-export function setSourceObject(stream) {
+function setSourceObject(stream) {
     if (!video.srcObject) {
         video.srcObject = stream
         video.play()
@@ -31,7 +39,7 @@ export function setSourceObject(stream) {
     }
 }
 
-export function hide() {
+function hide() {
     connectionStatus.style.display = "none";
     video.srcObject = null;
     videoWrapper.style.display = "none";

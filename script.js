@@ -4,7 +4,7 @@ import * as micButton from './body/main/toolbar/mic-button.js';
 import * as videocamButton from './body/main/toolbar/videocam-button.js';
 import * as callButton from './body/main/toolbar/call-button.js';
 import * as chatButton from './body/main/toolbar/chat-button.js';
-import * as textField from './body/sidebar/text-field.js';
+import * as sidebar from './body/sidebar/sidebar.js';
 
 import * as main from './body/main/main.js';
 import * as selfVideo from './body/main/videos/self-video.js';
@@ -21,7 +21,7 @@ videocamButton.initialize();
 callButton.initialize();
 chatButton.initialize();
 // Sidebar
-textField.initialize();
+sidebar.initialize();
 
 // Get User Media
 navigator.mediaDevices.getUserMedia({ video: {aspectRatio: 16 / 9}, audio: true })

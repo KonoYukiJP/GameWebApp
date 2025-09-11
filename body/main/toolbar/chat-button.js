@@ -5,9 +5,6 @@ const chatButtonIcon = chatButton.querySelector(".material-symbols-rounded");
 
 // Sidebar
 const sidebar = document.getElementById('sidebar');
-const log = document.getElementById('log');
-const textField = document.getElementById('text-field');
-
 let isOn = false;
 
 export function initialize() {
@@ -25,6 +22,19 @@ export function initialize() {
         window.dispatchEvent(new CustomEvent("sidebar", { detail: { isHidden: !isOn } }));
     });
 
+    window.addEventListener("chatdatachannelopen", () => {
+        show()
+    });
+    window.addEventListener("callbuttonclick", (event) => {
+        if (!event.detail.isTurningOn) {
+            hide()
+        }
+    });
+    window.addEventListener("peerstatechange", (event) => {
+        if (event.detail.state === "disconnected") {
+            hide();
+        }
+    });
     window.addEventListener("peer-message", () => {
         if (!isOn) {
             notify();
@@ -32,7 +42,10 @@ export function initialize() {
     });
 }
 
-export function hide() {
+function show() {
+    chatButton.style.display = "inline-block";
+}
+function hide() {
     chatButton.style.display = "none";
     chatButtonIcon.textContent = "chat_bubble";
     chatButton.style.backgroundColor = "#ccc";
@@ -40,11 +53,7 @@ export function hide() {
     sidebar.style.display = "none";
 }
 
-export function show() {
-    chatButton.style.display = "inline-block";
-}
-
-export function notify() {
+function notify() {
     chatButtonIcon.textContent = "mark_chat_unread";
     chatButton.style.backgroundColor = "rgba(65, 147, 239)";
 }
