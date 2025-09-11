@@ -11,7 +11,7 @@ export function initialize() {
         const message = textField.value.trim();
         if (!message) return;
         
-        // Message
+        // Self Message
         window.dispatchEvent(new CustomEvent("selfmessage", { detail: message }));
         const messageElement = document.createElement("div");
         messageElement.classList.add("self-message");
@@ -30,19 +30,19 @@ export function initialize() {
     window.addEventListener("callbuttonclick", (event) => {
         if (!event.detail.isTurningOn) {
             sidebar.style.display = "none";
-            // Remove Log Child
-            while (log.firstChild) {
-                log.removeChild(log.firstChild);
-            }
+            removeLogMessage();
         }
     });
     window.addEventListener("peerstatechange", (event) => {
         if (event.detail.state === "disconnected") {
             sidebar.style.display = "none";
-            // Remove Log Child
-            while (log.firstChild) {
-                log.removeChild(log.firstChild);
-            }
+            removeLogMessage();
         }
     });
+}
+
+function removeLogMessage() {
+    while (log.firstChild) {
+        log.removeChild(log.firstChild);
+    }
 }

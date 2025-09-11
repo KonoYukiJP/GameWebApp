@@ -11,19 +11,25 @@ export function initialize() {
         if (!selfVideoTrack) return;
 
         if (!isOn) {
-            selfVideoTrack.enabled = true;
-            videocamButtonIcon.textContent = "videocam";
-            isOn = true;
+            turnOn()
         } else {
-            selfVideoTrack.enabled = false;
-            videocamButtonIcon.textContent = "videocam_off";
-            isOn = false;
+            turnOff()
         }
     });
 }
 
 export function setVideoTrack(videoTrack) {
     selfVideoTrack = videoTrack;
-    isOn = false;
+    turnOn();
+}
+
+function turnOn() {
+    selfVideoTrack.enabled = true;
     videocamButtonIcon.textContent = "videocam";
+    isOn = true;
+}
+function turnOff() {
+    selfVideoTrack.enabled = false;
+    videocamButtonIcon.textContent = "videocam_off";
+    isOn = false;
 }

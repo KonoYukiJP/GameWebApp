@@ -15,13 +15,13 @@ export function initialize() {
             hide()
         }
     });
+    window.addEventListener("peertrack", (event) => {
+        setSourceObject(event.detail)
+    });
     window.addEventListener("peerstatechange", (event) => {
         if (event.detail.state === "disconnected") {
             hide();
         }
-    });
-    window.addEventListener("peertrack", (event) => {
-        setSourceObject(event.detail)
     });
 }
 

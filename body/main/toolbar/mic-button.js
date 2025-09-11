@@ -11,19 +11,25 @@ export function initialize() {
         if (!selfAudioTrack) return;
         
         if (!isOn) {
-            selfAudioTrack.enabled = true;
-            micButtonIcon.textContent = "mic";
-            isOn = true;
+            turnOn()
         } else {
-            selfAudioTrack.enabled = false;
-            micButtonIcon.textContent = "mic_off";
-            isOn = false;
+            turnOff()
         }
     });
 }
 
 export function setAudioTrack(audioTrack) {
     selfAudioTrack = audioTrack;
-    isOn = false;
+    turnOn()
+}
+
+function turnOn() {
+    selfAudioTrack.enabled = true;
     micButtonIcon.textContent = "mic";
+    isOn = true;
+}
+function turnOff() {
+    selfAudioTrack.enabled = false;
+    micButtonIcon.textContent = "mic_off";
+    isOn = false;
 }
