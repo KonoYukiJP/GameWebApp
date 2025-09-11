@@ -3,27 +3,21 @@
 const chatButton = document.getElementById("chat-button");
 const chatButtonIcon = chatButton.querySelector(".material-symbols-rounded");
 
-// Sidebar
-const sidebar = document.getElementById('sidebar');
 let isOn = false;
 
 export function initialize() {
     chatButton.addEventListener("click", () => {
-        if (!isOn) {
-            sidebar.style.display = "flex";
-            chatButtonIcon.textContent = "chat";
-            chatButton.style.backgroundColor = "#ccc";
-            isOn = true;
-        } else {
-            sidebar.style.display = "none";
-            chatButtonIcon.textContent = "chat_bubble";
-            isOn = false;
-        }
-        window.dispatchEvent(new CustomEvent("sidebar", { detail: { isHidden: !isOn } }));
+        window.dispatchEvent(new CustomEvent("chatbuttonclick", { detail: { isTurningOn: !isOn } }));
+        !isOn ? turnOn() : turnOff();
     });
 
     window.addEventListener("chatdatachannelopen", () => {
         show()
+    });
+    window.addEventListener("peer-message", () => {
+        if (!isOn) {
+            notify();
+        }
     });
     window.addEventListener("callbuttonclick", (event) => {
         if (!event.detail.isTurningOn) {
@@ -35,11 +29,6 @@ export function initialize() {
             hide();
         }
     });
-    window.addEventListener("peer-message", () => {
-        if (!isOn) {
-            notify();
-        }
-    });
 }
 
 function show() {
@@ -47,12 +36,18 @@ function show() {
 }
 function hide() {
     chatButton.style.display = "none";
-    chatButtonIcon.textContent = "chat_bubble";
+    turnOff()
+}
+function turnOn() {
+    chatButtonIcon.textContent = "chat";
     chatButton.style.backgroundColor = "#ccc";
     isOn = true;
-    sidebar.style.display = "none";
 }
-
+function turnOff() {
+    chatButtonIcon.textContent = "chat_bubble";
+    chatButton.style.backgroundColor = "#ccc";
+    isOn = false;
+}
 function notify() {
     chatButtonIcon.textContent = "mark_chat_unread";
     chatButton.style.backgroundColor = "rgba(65, 147, 239)";

@@ -19,8 +19,16 @@ export function initialize() {
         messageElement.scrollIntoView({ behavior: "smooth", block: "end" });
         textField.value = "";
     });
-    window.addEventListener("callbuttonclick", (event) => {
+    window.addEventListener("chatbuttonclick", (event) => {
         if (event.detail.isTurningOn) {
+            sidebar.style.display = "flex";
+        } else {
+            sidebar.style.display = "none";
+        }
+    });
+    window.addEventListener("callbuttonclick", (event) => {
+        if (!event.detail.isTurningOn) {
+            sidebar.style.display = "none";
             // Remove Log Child
             while (log.firstChild) {
                 log.removeChild(log.firstChild);
@@ -29,6 +37,7 @@ export function initialize() {
     });
     window.addEventListener("peerstatechange", (event) => {
         if (event.detail.state === "disconnected") {
+            sidebar.style.display = "none";
             // Remove Log Child
             while (log.firstChild) {
                 log.removeChild(log.firstChild);

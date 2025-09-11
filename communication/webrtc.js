@@ -59,6 +59,7 @@ function connect() {
     rtcPeerConnection.onconnectionstatechange = () => {
         if (rtcPeerConnection.connectionState === "failed") {
             window.dispatchEvent(new CustomEvent("peerstatechange", { detail: { state: "disconnected" } }));
+            disconnect();
         }
     };
 

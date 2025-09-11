@@ -14,9 +14,21 @@ export function initialize() {
     setWindowInnerHeight()
     resizeVideos()
 
-    window.addEventListener("sidebar", (event) => {
-        isSidebarHidden = event.detail.isHidden;
+    window.addEventListener("chatbuttonclick", (event) => {
+        isSidebarHidden = !event.detail.isTurningOn;
         resizeVideos();
+    });
+    window.addEventListener("callbuttonclick", (event) => {
+        if (!event.detail.isTurningOn) {
+            isSidebarHidden = true;
+            resizeVideos();
+        }
+    });
+    window.addEventListener("peerstatechange", (event) => {
+        if (event.detail.state === "disconnected") {
+            isSidebarHidden = true;
+            resizeVideos();
+        }
     });
 }
 
