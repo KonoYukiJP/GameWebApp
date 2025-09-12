@@ -2,6 +2,7 @@
 
 import * as micButton from './body/main/toolbar/mic-button.js';
 import * as videocamButton from './body/main/toolbar/videocam-button.js';
+import * as videocamMenuButton from "./body/main/toolbar/videocam-menu-button.js"
 import * as callButton from './body/main/toolbar/call-button.js';
 import * as chatButton from './body/main/toolbar/chat-button.js';
 import * as sidebar from './body/sidebar/sidebar.js';
